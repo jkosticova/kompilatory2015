@@ -11,6 +11,6 @@ Adresar by mal obsahovat nasledovne subory/skripty:
 - **run.sh** program - spusti zadany program (vystup z kompilatora).
 - **inputs.in** - obsahuje dvojice uloha, subor oddelene medzerou, kde uloha je z mnoziny {primes, graph, sort} a subor je cesta k suboru, ktory obsahuje program, ktory bude kompilovat vas kompilator.
 - Vas kompilator, ako aj testovacie programy.
-- zoznam zmien oproti specifikacii
+- **readme.md** - zoznam zmien oproti specifikacii + relevantne poznamky k verziam pouziteho softveru (llvm, antlr, stringtemplates,...)
 
 Pozrite si vzorovy adresar c++.
