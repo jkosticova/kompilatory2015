@@ -1,0 +1,48 @@
+//tvrdacky QuickSort
+def nist utried(cele[] pole,cele N){
+	ak(N == 0 || N == 1){
+		vrac;
+	}
+	
+	cele pivot = pole[0];
+	cele[N] mense;
+	cele menseIt = 0;
+	cele[N] vacse;
+	cele vacseIt = 0;
+	dokolecka(cele i=1;i<N;i+=1){
+		ak(pole[i]<pivot){
+			mense[menseIt] = pole[i];
+			menseIt += 1;
+		}
+		inac ak(pole[i]>=pivot){
+			vacse[vacseIt] = pole[i];
+			vacseIt += 1;
+		}
+	}
+	
+	utried(mense,menseIt);
+	utried(vacse,vacseIt);
+	
+	dokolecka(cele i=0;i<menseIt;i+=1){
+		pole[i] = mense[i];
+	}
+	pole[menseIt] = pivot;
+	dokolecka(cele i=0;i<vacseIt;i+=1){
+		pole[menseIt+1+i] = vacse[i];
+	}
+}
+
+ZACATEK
+cele N = vezniCele();
+cele[N] pole;
+dokolecka(cele i=0;i<N;i+=1){
+	pole[i] = vezniCele();
+}
+
+utried(pole, N);
+
+dokolecka(cele i=0;i<N;i+=1){
+	tiskajCele(pole[i]);
+	tiskaj(' ');
+}
+

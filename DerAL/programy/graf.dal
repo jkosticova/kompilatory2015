@@ -1,0 +1,73 @@
+slubujem nist prehladajZVrcholu(cele vrchol, cele[][] hrany, bool[] nastiveneVrcholy);
+
+//prudke DFS
+def bool suvisly(cele[][] hrany, cele N){
+	ak(N == 0){
+		vrac pravda;
+	}
+
+	bool[N] nastiveneVrcholy;
+	dokolecka(cele i=0;i<N;i+=1){
+		nastiveneVrcholy[i] = blud;
+	}
+	
+	prehladajZVrcholu(0,hrany,nastiveneVrcholy);
+	
+	dokolecka(cele i=0;i<N;i+=1){
+		ak(!nastiveneVrcholy[i]){
+			vrac blud;
+		}
+	}
+	
+	vrac pravda;
+}
+
+def nist prehladajZVrcholu(cele vrchol, cele[][] hrany, bool[] nastiveneVrcholy){
+	nastiveneVrcholy[vrchol] = pravda;
+	dokolecka(cele i=1;i<=hrany[vrchol][0];i+=1){
+		cele susennyVrchol = hrany[vrchol][i]; 
+		ak(!nastiveneVrcholy[susennyVrchol]){
+			prehladajZVrcholu(susennyVrchol,hrany,nastiveneVrcholy);
+		}
+	}
+}
+
+ZACATEK
+
+cele N = vezniCele();
+bool[N] vrcholy; //spustime prehladavanaie a zaznamenavame si ci sme uz vrchol nastivili
+
+cele M = vezniCele();
+
+cele[N][M+1] hrany; //v 0-tom policku si pre kazdy vrchol pamatam pocet jeho hran
+dokolecka(cele i=0;i<N;i+=1){
+	hrany[i][0] = 0;
+}
+
+dokolecka(cele i=0;i<M;i+=1){
+
+	cele v1 = vezniCele();
+	cele v2 = vezniCele();
+
+	hrany[v2][hrany[v2][0]+1] = v1;
+	hrany[v1][hrany[v1][0]+1] = v2;
+	hrany[v2][0] += 1;
+	hrany[v1][0] += 1;
+}
+
+ak(suvisly(hrany,N)){
+	tiskajRetazec("ANO");
+}
+inac{
+	tiskajRetazec("NIE");
+}
+
+
+
+
+
+
+
+
+
+
