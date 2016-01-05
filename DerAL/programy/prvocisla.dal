@@ -1,0 +1,24 @@
+def bool jePrvocislo(cele c, cele[] mensePrvocisla, cele zatalNajdenych){
+	dokolecka(cele i=0;i<zatalNajdenych;i+=1){
+		ak(c % mensePrvocisla[i] == 0){
+			vrac blud;
+		}
+	}
+	vrac pravda;
+}
+
+ZACATEK
+znak z;
+cele N = vezniCele();
+
+cele[N] prvocisla;
+cele zatalNajdenych = 0;
+
+dokolecka(cele i=2;i<N;i+=1){
+	ak(jePrvocislo(i, prvocisla, zatalNajdenych)){
+		tiskajCele(i);
+		tiskaj('\n');
+		prvocisla[zatalNajdenych] = i;
+		zatalNajdenych += 1;
+	}
+}

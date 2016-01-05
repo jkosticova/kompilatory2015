@@ -1,0 +1,373 @@
+group TEMPLATES;
+
+program(code, func_defs, global_var_defs,extern_func_declarations) ::= <<
+
+;%formatStr = getelementptr [4 x i8]* @.intPrint, i32 0, i32 0
+;call i32 (i8*, ...)* @printf(i8* %formatStr,i32 %.3)
+
+@.intPrint = constant [3 x i8] c"%i\00"
+@.doublePrint = constant [4 x i8] c"%lf\00"
+declare i32 @scanf(i8*, ...)
+declare i32 @printf(i8*, ...)
+
+declare i32 @puts(i8*)
+declare i8* @gets(i8*)
+declare i32 @getchar()
+declare i32 @putchar(i32)
+
+define i8 @vezni(){
+  %i = call i32 @getchar()
+  %c = trunc i32 %i to i8
+  ret i8 %c
+}
+
+define void @tiskaj(i8 %c){
+  %i = zext i8 %c to i32
+  call i32 @putchar(i32 %i)
+  ret void
+}
+
+define void @tiskajRetazec(i8* %s){
+  call i32 @puts(i8* %s)
+  ret void
+}
+
+define void @vezniRetazec(i8* %s){
+  call i8* @gets(i8* %s)
+  ret void
+}
+
+define void @tiskajCele(i32 %i){
+  %formatStr = getelementptr [3 x i8]* @.intPrint, i32 0, i32 0
+  call i32 (i8*, ...)* @printf(i8* %formatStr,i32 %i)
+  ret void
+}
+
+define i32 @vezniCele(){
+  %formatStr = getelementptr [3 x i8]* @.intPrint, i32 0, i32 0
+  %i = alloca i32
+  call i32 (i8*, ...)* @scanf(i8* %formatStr,i32* %i)
+  %ival = load i32* %i
+  ret i32 %ival
+}
+
+define void @tiskajRealne(double %d){
+  %formatStr = getelementptr [4 x i8]* @.doublePrint, i32 0, i32 0
+  call i32 (i8*, ...)* @printf(i8* %formatStr,double %d)
+  ret void
+}
+
+define double @vezniRealne(){
+  %formatStr = getelementptr [4 x i8]* @.doublePrint, i32 0, i32 0
+  %d = alloca double
+  call i32 (i8*, ...)* @scanf(i8* %formatStr,double* %d)
+  %dval = load double* %d
+  ret double %dval
+}
+
+<extern_func_declarations>
+
+<global_var_defs>
+
+<func_defs>
+
+define i32 @main() {
+start:
+%$ret = alloca i32
+store i32 0, i32* %$ret
+
+<code>
+
+br label %$retLabel
+$retLabel:
+  %$retVal = load i32* %$ret 
+  ret i32 %$retVal
+}
+>>
+
+var_expression_basic(regToStoreResult,varNameLLVM ,varLLVMType, isGlobal) ::= <<
+%<regToStoreResult> = load <varLLVMType>* <if (isGlobal)>@<else>%<endif><varNameLLVM>
+
+>>
+
+var_expression_array_index(regToStoreIndexedPtr,arrayNameLLVM ,arrayLLVMType, isGlobal, indexReg, indexesVectorLLVMType
+			, indexesVectorReg, indexNo, helpReg) ::= <<
+%<helpReg> = load <arrayLLVMType>* <if (isGlobal)>@<else>%<endif><arrayNameLLVM>
+%<indexReg> = extractelement <indexesVectorLLVMType> %<indexesVectorReg>, i32 <indexNo>
+%<regToStoreIndexedPtr> = getelementptr <arrayLLVMType> %<helpReg>, i32 %<indexReg>
+
+>>
+
+var_declaration_basic_type(varName, llvmType, isGlobal, globalInitVal) ::= <<
+<if (isGlobal)>
+@<varName> = global <llvmType> <globalInitVal>
+<else>
+%<varName> = alloca <llvmType>
+<endif>
+>>
+
+var_assign(llvmVarType, valueRegister, llvmVarName, valI32toI8, valI8toI32, noCast, regForCasted, isGlobal) ::= <<
+<if (noCast)>
+  store <llvmVarType> %<valueRegister>, <llvmVarType>* <if (isGlobal)>@<else>%<endif><llvmVarName>
+<endif>
+<if (valI32toI8)>
+  %<regForCasted> = trunc i32 %<valueRegister> to i8
+  store <llvmVarType> %<regForCasted>, <llvmVarType>* <if (isGlobal)>@<else>%<endif><llvmVarName>
+<endif>
+<if (valI8toI32)>
+  %<regForCasted> = sext i8 %<valueRegister> to i32
+  store <llvmVarType> %<regForCasted>, <llvmVarType>* <if (isGlobal)>@<else>%<endif><llvmVarName>
+<endif>
+
+>>
+
+string_const(strLen, regToStoreStr, globalConstReg) ::= <<
+%<regToStoreStr> = getelementptr [<strLen> x i8]* @<globalConstReg>, i32 0, i32 0
+
+>>
+
+int_const(regToStoreInt, val) ::= <<
+%<regToStoreInt> = add i32 0, <val>
+
+>>
+
+bool_const(regToStoreBool, val) ::= <<
+%<regToStoreBool> = add i1 0, <val>
+
+>>
+
+char_const(regToStoreChar, val) ::= <<
+%<regToStoreChar> = add i8 0, <val>
+
+>>
+
+double_const(regToStoreDouble, val) ::= <<
+%<regToStoreDouble> = fadd double 0.0, <val> 
+
+>>
+
+unary_minus(exprCode, exprValReg, regToStoreResult, llvmType, isDouble) ::= <<
+<exprCode>
+%<regToStoreResult> = <if (isDouble)>f<endif>sub <llvmType> 0<if (isDouble)>.0<endif>, %<exprValReg>
+
+>>
+
+unary_not(exprCode, exprValReg, regToStoreResult) ::= <<
+<exprCode>
+%<regToStoreResult> = add i1 1, %<exprValReg>
+
+>>
+
+artihmetic_rel_expression(leftOpExpr, leftResultReg, rightOpExpr, rightResultReg, regToStoreResult, llvmOp, isDouble,
+	castLeft, castRight, regToStoreCasted, intLLVMTypeOfOperands) ::= <<
+<leftOpExpr>
+<rightOpExpr>
+
+<if (isDouble)>
+  %<regToStoreResult> = <llvmOp> double %<leftResultReg>, %<rightResultReg>
+<else>
+  <if (castLeft)>
+    %<regToStoreCasted> = sext i8 %<leftResultReg> to i32
+    %<regToStoreResult> = <llvmOp> i32 %<regToStoreCasted>, %<rightResultReg>
+  <else>
+    <if (castRight)>
+      %<regToStoreCasted> = sext i8 %<rightResultReg> to i32
+      %<regToStoreResult> = <llvmOp> i32 %<leftResultReg>, %<regToStoreCasted>
+    <else>
+        %<regToStoreResult> = <llvmOp> <intLLVMTypeOfOperands> %<leftResultReg>, %<rightResultReg>
+    <endif>
+  <endif>
+<endif>
+>>
+
+op_assign(varNameLLVM, varValReg ,varTypeLLVM, isGlobal ,expr, exprResReg, regToStoreUpdatedVal, llvmOp, isDouble,
+	castExprI32toI8, castExprI8toI32, regToStoreCasted) ::= <<
+%<varValReg> = load <varTypeLLVM>* <if (isGlobal)>@<else>%<endif><varNameLLVM>
+<expr>
+
+<if (isDouble)>
+  %<regToStoreUpdatedVal> = <llvmOp> double %<varValReg>, %<exprResReg>
+<else>
+  <if (castExprI32toI8)>
+    %<regToStoreCasted> = trunc i32 %<exprResReg> to i8
+    %<regToStoreUpdatedVal> = <llvmOp> i8 %<varValReg>, %<regToStoreCasted>
+  <else>
+    <if (castExprI8toI32)>
+      %<regToStoreCasted> = sext i8 %<exprResReg> to i32
+      %<regToStoreUpdatedVal> = <llvmOp> i32 %<varValReg>, %<regToStoreCasted>
+    <else>
+        %<regToStoreUpdatedVal> = <llvmOp> <varTypeLLVM> %<varValReg>, %<exprResReg>
+    <endif>
+  <endif>
+<endif>
+store <varTypeLLVM> %<regToStoreUpdatedVal>, <varTypeLLVM>* <if (isGlobal)>@<else>%<endif><varNameLLVM>
+
+>>
+
+//ospravedlnuje sa za tento jemny humac, ale elegantne riesenie s PHI hadzalo "PHI node entries do not match predecessors!"
+//a to neviem ako fixnut
+and_expression(leftOpExpr, leftResultReg, rightOpExpr, rightResultReg, labelsNo, resultReg) ::= <<
+%$and_result_ptr<labelsNo> = alloca i1
+br label %$and_begin<labelsNo>
+$and_begin<labelsNo>:
+  <leftOpExpr> 
+  br i1 %<leftResultReg>, label %$and_nvbuyiwbe<labelsNo>, label %$and_false_res<labelsNo>
+$and_nvbuyiwbe<labelsNo>:
+  <rightOpExpr>
+  br i1 %<rightResultReg>, label %$and_true_res<labelsNo>, label %$and_false_res<labelsNo>
+$and_false_res<labelsNo>:
+  store i1 false, i1* %$and_result_ptr<labelsNo>
+  br label %$and_after<labelsNo>
+$and_true_res<labelsNo>:
+  store i1 true, i1* %$and_result_ptr<labelsNo>
+  br label %$and_after<labelsNo>
+$and_after<labelsNo>:
+  %<resultReg> = load i1* %$and_result_ptr<labelsNo> 
+
+>>
+
+or_expression(leftOpExpr, leftResultReg, rightOpExpr, rightResultReg, labelsNo, resultReg) ::= <<
+%$or_result_ptr<labelsNo> = alloca i1
+br label %$or_begin<labelsNo>
+$or_begin<labelsNo>:
+  <leftOpExpr> 
+  br i1 %<leftResultReg>, label %$or_true_res<labelsNo>, label %$or_jbnashiuerg<labelsNo>
+$or_jbnashiuerg<labelsNo>:
+  <rightOpExpr>
+  br i1 %<rightResultReg>, label %$or_true_res<labelsNo>, label %$or_false_res<labelsNo>
+$or_false_res<labelsNo>:
+  store i1 false, i1* %$or_result_ptr<labelsNo>
+  br label %$or_after<labelsNo>
+$or_true_res<labelsNo>:
+  store i1 true, i1* %$or_result_ptr<labelsNo>
+  br label %$or_after<labelsNo>
+$or_after<labelsNo>:
+  %<resultReg> = load i1* %$or_result_ptr<labelsNo>
+
+>>
+
+store_vector_of_array_alloc_sizes(resultReg, llvmTypeOfSizesVector, sizesVector, identityShiftVector) ::= <<
+%<resultReg> = shufflevector <llvmTypeOfSizesVector> <sizesVector>, <llvmTypeOfSizesVector> undef, <llvmTypeOfSizesVector> <identityShiftVector>
+
+>>
+
+//tato sablona inicializuje prvy level pola, v pripade jednorozmerneho pola je jedina co sa pouzije
+//ak mame viacrozmerne pole, je zvysok sa inicializuje pomocou array_alloc_loop sablony, nakolko viacrozmerne polia
+//su implementovane ako polia poli. Dalsia podstatna vec je, ze sablonova premenna namesIndex musi byt v pripade
+//viacrozmernych poli v oboch pouzitych sablonach taka ista, inac to rachne.
+array_alloc_begin(arrayVarName, sizesVectorCode, sizesVectorReg, sizesVectorType , allocaZeroLevelType, namesIndex, isGlobal) ::= <<
+<sizesVectorCode>
+
+%$size0<namesIndex> = extractelement <sizesVectorType> %<sizesVectorReg>, i32 0
+%$basePtr<namesIndex>_0 = alloca <allocaZeroLevelType>, i32 %$size0<namesIndex>
+store <allocaZeroLevelType>* %$basePtr<namesIndex>_0, <allocaZeroLevelType>** <if (isGlobal)>@<else>%<endif><arrayVarName>
+
+>>
+
+//level hovori o tom, ze cez kolkatu uroven pola teraz prechadzame a alokujeme pre nu priestor
+array_alloc_loop(namesIndex, level, nextLevel, sizesVectorReg, sizesVectorType, allocaLevelType, nextLevelLoopIfNeed) ::= <<
+br label %$arr_for_init<namesIndex>_<level>
+$arr_for_init<namesIndex>_<level>:
+  %$size<namesIndex>_<level> = extractelement <sizesVectorType> %<sizesVectorReg>, i32 <level>
+  %$i<namesIndex>_<level> = alloca i32
+  store i32 0, i32* %$i<namesIndex>_<level> 
+  br label %$arr_for_test<namesIndex>_<level>
+$arr_for_test<namesIndex>_<level>:
+  %$ival<namesIndex>_<level> = load i32* %$i<namesIndex>_<level>
+  %$testReg<namesIndex>_<level> = icmp slt i32 %$ival<namesIndex>_<level>, %$size<namesIndex>_<level>
+  br i1 %$testReg<namesIndex>_<level>, label %$arr_for_body<namesIndex>_<level>, label %$arr_for_after<namesIndex>_<level>
+$arr_for_body<namesIndex>_<level>:
+
+  %$thisLevelCellPtr<namesIndex>_<level> = getelementptr <allocaLevelType>** %$basePtr<namesIndex>_<level>, i32 %$ival<namesIndex>_<level>
+  %$allocaSize<namesIndex>_<level> = extractelement <sizesVectorType> %<sizesVectorReg>, i32 <nextLevel>
+  %$basePtr<namesIndex>_<nextLevel> = alloca <allocaLevelType>, i32 %$allocaSize<namesIndex>_<level>
+  store <allocaLevelType>* %$basePtr<namesIndex>_<nextLevel>, <allocaLevelType>** %$thisLevelCellPtr<namesIndex>_<level>
+  
+  <if (nextLevelLoopIfNeed)>
+  <nextLevelLoopIfNeed>
+  <endif>
+    
+  %$ivalInc<namesIndex>_<level> = add i32 1, %$ival<namesIndex>_<level>
+  store i32 %$ivalInc<namesIndex>_<level>, i32* %$i<namesIndex>_<level>
+  br label %$arr_for_test<namesIndex>_<level>
+$arr_for_after<namesIndex>_<level>:
+
+>>
+
+function_arg_initialization(argVarLLVMName, argLLVMType, argName) ::= <<
+%<argVarLLVMName> = alloca <argLLVMType>
+store <argLLVMType> %<argName>, <argLLVMType>* %<argVarLLVMName>
+
+>>
+
+return_statement(expression, exprResReg, retType) ::= <<
+<expression>
+store <retType> %<exprResReg>, <retType>* %$ret
+br label %$retLabel
+
+>>
+
+function_end(isVoid, retType) ::= <<
+br label %$retLabel
+$retLabel:
+<if (isVoid)>
+  ret void
+<else>
+  %$retVal = load <retType>* %$ret 
+  ret <retType> %$retVal
+<endif>
+>>
+
+function_call(retType, notVoid, resultReg, llvmArgsList, functionName) ::= <<
+<if (notVoid)>%<resultReg> = <endif>call <retType> @<functionName>(<llvmArgsList>)
+
+>>
+
+if(condExpr,condResReg, namesIndex, trueLLVMCode, falseLLVMCode, isElse) ::= <<
+<condExpr>
+br i1 %<condResReg>, label %$if_true<namesIndex>, <if (isElse)>label %$if_false<namesIndex> <else> label %$if_after<namesIndex> <endif>
+$if_true<namesIndex>:
+  <trueLLVMCode>
+  br label %$if_after<namesIndex>
+<if (isElse)>
+$if_false<namesIndex>:
+  <falseLLVMCode>
+  br label %$if_after<namesIndex>
+<endif>
+$if_after<namesIndex>:
+>>
+
+while(condExpr,condResReg,namesIndex,body) ::= <<
+br label %$while_condCheck<namesIndex>
+$while_condCheck<namesIndex>:
+<if (condExpr)>
+  <condExpr>
+  br i1 %<condResReg>, label %$while_body<namesIndex>, label %$while_after<namesIndex>
+<else>
+  br label %$while_body<namesIndex>
+<endif>
+$while_body<namesIndex>:
+  <body>
+  br label %$while_condCheck<namesIndex>
+$while_after<namesIndex>:
+
+>>
+
+for(condExpr,condResReg,namesIndex,body,initLLVM,loopStatementLLVM) ::= <<
+<initLLVM>
+br label %$for_condCheck<namesIndex>
+$for_condCheck<namesIndex>:
+  <if (condExpr)>
+    <condExpr>
+    br i1 %<condResReg>, label %$for_body<namesIndex>, label %$for_after<namesIndex>
+  <else>
+    br label %$for_body<namesIndex>
+  <endif>
+$for_body<namesIndex>:
+  <body>
+  <loopStatementLLVM> 
+  br label %$for_condCheck<namesIndex>
+$for_after<namesIndex>:
+
+>>
+
