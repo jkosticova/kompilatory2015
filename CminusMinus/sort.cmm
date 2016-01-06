@@ -1,0 +1,23 @@
+num x;
+>>n x;
+num pole[x];
+
+num tmp;
+ring(num i=0;i<x;i++){
+	>>n tmp;
+	pole[i]=tmp;
+};
+
+ring(num i=0;i<x;i++){
+	ring(num j=0;j<x-i-1;j++){
+		ak(pole[j]>pole[j+1]){
+			num temp=pole[j];
+			pole[j]=pole[j+1];
+			pole[j+1] = temp;
+		};
+	};
+};
+
+
+ring(num i=0;i<x;i++)
+<<n pole[i];

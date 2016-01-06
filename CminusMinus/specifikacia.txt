@@ -1,0 +1,62 @@
+Specifikacia jazyka cMinusMinus:
+
+Klucove slova:
+	ak
+	inak
+	return
+	ring
+	extern
+	def
+	<<t
+	<<n
+	>>n
+	>>t
+	#
+	and
+	or
+	
+
+Jazyk ignoruje whitespace.
+
+Kazdy statement( t.j. priradenie hodnoty, deklarovanie premennej, inkrement, dekrement, vypisanie hodnoty, nacitanie hodnoty, blok kodu, blok tela funkcie, volanie funkcie, definovanie funkcie, for cyklus, podmienka..) musi byt ukonceny ';'.
+
+Jazyk podporuje 32-bitovy int, ktory sa v jazyku vola "num". Deklarovat premennu tohoto typu je mozne nasledovne : num <name>;. Pripadne jej rovno priradit hodnotu: num <name>=<ciselny vyraz/hodnota>
+Jazyk podporuje stringy(ako polia charov) oznacovane ako "text". Deklaruje sa rovnako ako int.
+
+Jazyk podporuje aritmeticke/logicke operacie ako su +,-,*,/,%,and(&&),or(||), >,< ,==,!=, >=, <= len na ciselnych hodnotach. Ktore predstavuju v poradi klasice scitovanie, odcitovanie, nasobenie, delenie,modulo, bitovy/logicky and, bitovy/logicky or, mensi, vacsi, rovny, nerovny, vacsi alebo rovny, mensi alebo rovny. A Unarne minus.
+
+V podmienkach je string vzdy vyhodnoteny ako true. Cislo sa vyhodnocuje podla hodnoty 0 je false a vsetko !=0 je true. Samotne pole v podmienke nema vyznam bude je to pole stringov a vyhodnoti sa na true, alebo sa hodnoti konkretna hodnota z pola intov.
+
+Na priradenie hodnoty do premennej sluzi znak '='.
+
+Polia sa deklaruju hranatymi zatvorkami v tvare -> <type> <meno>[]; (napr. num x[47][y];). Jazyk podporuje dynamicky alokovatelne polia poli. Nie je mozne deklarovane pole inicializovat nejakou hodnotou alebo inym polom.
+
+Podmienky su v jazyku definovane klucovymi slovami ak(<podmienka>) <telo true podmienky> (volitelne rozsiritelne o) inak <telo false podmienky>. telo moze byt jeden statement alebo cely blok statementov. V pripade ze za ak nasleduje aj vetva inak.. je nutne aby bolo telo platnej podmienky v bloku ( { .. } ).
+
+
+Jazyk podporuje for cyklus s klasickou c syntaxou. Rozdielom je klucove slovo "ring". Inicializacia (1. parameter forcyklu) je nepovinny ( podobna syntax ku c while cyklu), povinna podmienka a nasledne nepovinny statement. Telo for cyklu moze byt jeden statement alebo cely blok statementov. Priklad for cyklu v jazyku : ring(num i=0;i<47;i++){ <<n i; };
+
+Jazyk podporuje vypisovanie na standardny vystup. Ciselne hodnoty sa vypisuju pomocou prikazu <<n <ciselny_vyraz>; a textove hodnoty pomocou <<t <text>;. Prikazy nie je mozne zlucovat. Prikazy na vypis vypisuju vzdy na samostatny riadok.
+
+Jazyk podporuje citanie zo standardneho vstupu pomocou prikazou >>n a >>t (pre ciselnu a textovu hodnotu). 
+
+Jazyk podporuje komentare, ktore su oznacene znakom # a cely riadok nasledujuci za tymto znakom je ignorovany..
+
+Jazyk podporuje definovanie funkcii pomocou klucoveho slova def ... syntax definovania funkcii: def <return_type> <name>(<type1< <argument1>,....,<typeN> <argumentN>){ <telo funkcie> return <type> <vyraz> }; 
+Argumentom funkcie mozu byt aj viacrozmerne polia, ktore sa oznacuju v style <type> <name>[]...[] kde pocet [] oznacuje rozmer pola. Funkcia musi obsahovat klucove slovo return s navratovou hodnotou. Jazyk podporuje funkcie s rovnakym menom a odlisnym poctom argumentov. Jazyk podporuje rekurzivne funkcie.
+
+Jazyk umoznuje deklarovat externe funkcie pomocou klucoveho slova extern. Priklad : extern def <type> <name>(<args>);. Volanie externych funkcii je totozne s volanim internych.
+
+Funkcie sa v jazyku volaju jednoduchou syntaxou: <name>(<args>);. Funkcie je nutne pred zavolanim definovat. Pri volani sa musi zhodovat pocet aj typ argumentov s definiciou.  
+
+Jazyk podporuje localScope premenne v kazdom bloku, ktory je oddeleny pomocou {}. ( a teda aj telo for cyklu, funkcii ...) 
+
+Hlavny program vyuziva funkciu "main".
+
+Jazyk je typovy. Premenne treba vzdy deklarovat pred ich pouzitim.
+
+
+Premenne su alkovane na stacku cez (alloca) a po deklarovanie nie su inicializovane.
+
+
+
