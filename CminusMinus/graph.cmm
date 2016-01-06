@@ -1,0 +1,61 @@
+num n;
+num m;
+
+>>n n;
+>>n m;
+
+num pole[n][n];
+num visited[n];
+
+ring(num i=0;i<n;i++){
+	ring(num j=0;j<n;j++){
+		pole[i][j]=0;
+	};
+};
+
+ring(num i=0;i<n;i++){
+	visited[i]=0;
+};
+
+
+ring(num i=0;i<m;i++){
+	num a;
+	num b;
+	>>n a;
+	>>n b;
+	pole[a][b]=1;
+	pole[b][a]=1;
+};
+
+
+
+def num dfs(num v,num n, num p[][], num vis[]){
+	vis[v]=1;
+	ring(num i=0;i<n;i++){
+		ak(p[v][i]){
+			ak(vis[i]==0){
+				dfs(i,n,p,vis);
+			};
+		};
+	};
+	return 0;
+};
+
+
+dfs(0,n, pole, visited);
+
+num result=1;
+ring(num i=0;i<n;i++){
+		ak(visited[i] == 0){
+			result=0;
+		};
+};
+
+ak(result){
+	<<t "ANO";
+}
+inak
+	<<t "NIE";
+
+
+

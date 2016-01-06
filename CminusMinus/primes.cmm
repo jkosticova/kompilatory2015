@@ -1,0 +1,15 @@
+num x;
+>>n x;
+num pole[x+1];
+ring(num i=2;i<=x;i++){
+	pole[i]=1;
+};
+
+ring (num i=2; i<=x; i++) {
+	ak(pole[i]){
+		<<n i;
+		ring(num j=2*i;j<=x;j=j+i){
+			pole[j]=0;
+		};
+	};
+};
