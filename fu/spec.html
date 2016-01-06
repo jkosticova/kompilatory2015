@@ -1,0 +1,162 @@
+<html>
+<head>
+<meta charset="utf8" />
+</head>
+<body>
+<h1>Špecifikácia</h1>
+<h2>Hlavné zmeny oproti pôvodnej špecifikácií</h2>
+<ul>
+<li>Mena premenných môžu byť už len alfanumerické</li>
+<li>Dospecifikovane veci podľa pokynov</li>
+<li>Upravená forma špecifikácie (Markdown)</li>
+<li>Uzrejmene pravidlá o písaní bodkočiarok</li>
+</ul>
+<h2>Premenné</h2>
+<h3>Základné typy premenných</h3>
+<ul>
+<li><code>\/</code> - 32-bitové signed číslo (kompatibilné s <code>int32_t</code>)</li>
+<li>\ - null-terminated string (kompatibilné s <code>uint8_t*</code>)</li>
+</ul>
+<h3>Typ pole</h3>
+<ul>
+<li><code>\/[]</code> - pole 32-bitových čísel (<code>int32_t*</code>)</li>
+<li><code>\\[]</code> - pole string-ov (<code>int8_t**</code>)</li>
+<li>Viacrozmerné polia sú implementované ako polia poli (napr. <code>int32_t***</code>)</li>
+<li>jagged arrays alebo "lineárne" viacrozmerné polia (<code>int32_t[][][]</code>) nie sú podporované</li>
+</ul>
+<h3>Práca s premennými</h3>
+<ul>
+<li><code>\/ x</code>; (vytvorenie bez inicializácie)</li>
+<li><code>\/ y = 47;</code> (vytvorenie s inicializáciou)</li>
+<li><code>x = 42;</code> (zmena hodnoty)</li>
+<li><code>x = y;</code> (kopírovanie hodnoty premennej <code>y</code> do <code>x</code>)</li>
+<li><code>\\ ahoj = "cau";</code></li>
+<li><code>\\ wau = ahoj + "svet";</code></li>
+<li>Premenné sú po vytvorení inicializované na <code>0</code>, resp. <code>""</code>;</li>
+<li>Reťazce nie sú meniteľné po znakoch</li>
+<li>Reťazce sú spajatelne pomocou <code>+</code>.</li>
+<li>Reťazce (bohužiaľ) nemôžu obsahovať whitespace :(</li>
+<li>Mena premenných musia začínať písmenom a môžu obsahovať písmena a čísla</li>
+<li>Premenné sú alokované na stack-u (<code>alloca</code>)</li>
+<li>Reťazce sú immutable (<code>+</code> aj načítavanie vytvárajú nový reťazec)</li>
+</ul>
+<h3>Operácie s premennými a hodnotami</h3>
+<ul>
+<li>Reťazcové operácie na reťazcoch:</li>
+<li>Binárne: +</li>
+<li>Číselné operácie na číslach:</li>
+<li>Unárne: +, -</li>
+<li>Binárne: +, -, *, /, %</li>
+<li>Číselné operácie na premenných:</li>
+<li>++, --, +=, -=, *=, /=, %=</li>
+<li>Logické operácie na číslach: (vracajú 0 alebo 1)</li>
+<li>Unárne: !</li>
+<li>Binárne: &amp;&amp;, ||, &gt;, &lt;, &lt;=, &gt;=, &lt;&gt;, ==</li>
+</ul>
+<h2>Statements</h2>
+<h3>If</h3>
+<p><code>?(podmienka):{ then }::{ else }</code></p>
+<ul>
+<li>bloky pre časti then a else sú povinné, môžu byť prázdne 
+    (napr. <code>?(podmienka):{}::{};</code>)</li>
+<li>podmienka sa vyhodnocuje logicky podľa týchto pravidiel:</li>
+<li>čísla majú hodnotu PRAVDA ak nie sú rovné 0</li>
+<li>reťazce majú hodnotu PRAVDA ak sú neprázdne</li>
+<li>polia majú vždy hodnotu PRAVDA</li>
+</ul>
+<h3>For</h3>
+<p><code>@(statement; expression; statement) { then }</code></p>
+<ul>
+<li>syntax podobná ako v C</li>
+<li>blokové zátvorky sú povinné</li>
+<li>neexistuje block-scoping.. (tj. ak sa použije štýlom <code>@(\/i=0;i&lt;10;i++){}</code> tak <code>i</code> ostane zadefinovaná aj po skončení cyklu)</li>
+<li>podmienka sa vyhodnocuje rovnako ako v if-e</li>
+</ul>
+<h3>While</h3>
+<p><code>$(expression){ then }</code></p>
+<ul>
+<li>syntax podobná ako v C</li>
+<li>podmienka sa vyhodnocuje rovnako ako v if-e</li>
+</ul>
+<h2>Funkcie</h2>
+<h3>Typy funkcií</h3>
+<ul>
+<li><code>\/</code>, <code>\\</code> - vrátia <code>\/</code>, <code>\\</code> respectively</li>
+<li><code>\-</code> - nevráti nič (void)</li>
+</ul>
+<h3>Práca s funkciami</h3>
+<ul>
+<li>Premenné typu int, sú copy-by-value, polia sú copy-by-reference</li>
+<li>Premenné typu string sú copy-by-reference, ale jazyk FU neumožňuje ich zmenu po znakoch. Zmena stringu po znakoch je umoznitelna pomocou použitia externej funkcie napísaná v jazyku C alebo kompatibilnom.</li>
+<li>Na vrátenie poľa je odporúčané využiť vlastnosť copy-by-reference :)</li>
+<li>Funkcie si svoje premenné alokujú na stack-u s nasledovnými výnimkami:</li>
+<li>Ak funkcia vracia string, je predtým jeho hodnota skopírovaná na heap</li>
+<li>Ak funkcia vkladá string do poľa, ktoré dostala ako argument, je pred priradením jeho hodnota skopírovaná na heap.</li>
+<li>Funkcie sú kompatibilné s C
+   ( vo FU sa dá napísať knižnica použiteľná v jazyku C a opačne )</li>
+<li>Definícia funkcie:
+   <code>\/ menoFunkcie(\/ argument1, \/[] argument2) { return argument1 + argument2[0] + 47; };</code></li>
+<li>Deklarácia externej funkcie:
+   <code>\/ externaFunkcia(\/, \\);</code></li>
+<li>Volanie funkcie:
+   <code>\/[2] pole;</code>
+   <code>\/ x = menoFunkcie(42, pole);</code></li>
+<li>Externé funkcie sa volajú rovnako ako interné</li>
+<li>Funkcie je potrebné definovať pred použitím a dodržať počet a typy argumentov pri volaní</li>
+<li>Rekurzívne funkcie sú povolené</li>
+<li>Forward declaration v jazyku nie je povolená, treba použiť viacero súborov</li>
+<li>Nie je možné mať dve funkcie s rovnakým názvom a iným počtom argumentov.</li>
+<li>Nie je možné predefinovať knižničné funkcie, tj. nasledovné:</li>
+<li>Vstavané knižničné funkcie (interné a externé)</li>
+<li><code>\/ strlen(\\ x)</code></li>
+<li><code>\- printSpace()</code></li>
+<li><code>\- printNewLine()</code></li>
+<li><code>\- printLnInt(\/ c)</code></li>
+<li><code>\- printInt(\/ c)</code></li>
+<li><code>\- printLnStr(\/ c)</code></li>
+<li><code>\- printStr(\/ c)</code></li>
+<li><code>\\ strcat(\\ x, \\ y)</code></li>
+<li>Externé funkcie používané, ktoré nie sú kompatibilné s FU jazykom:</li>
+<li><code>i32 @scanf(i8*, ...)</code></li>
+<li><code>i32 @printf(i8*, ...)</code></li>
+<li><code>i8* @malloc(i64)</code></li>
+<li><code>i8* @strcpy(i8*, i8*)</code></li>
+</ul>
+<h2>Input/Output</h2>
+<ul>
+<li>Načítavanie do premennej <code>\/</code> alebo <code>\\</code>:</li>
+<li><code>\/ x; x&lt;&lt;;</code></li>
+<li>Načítavanie do premennej \ načítava min(1023 znakov, počet znakov po prvý whitespace) (<code>scanf("%1023s")</code>)</li>
+<li>Načítavanie do pola:</li>
+<li><code>\/[n] x; x&lt;&lt;\/[n];</code></li>
+<li>Pri načítavaní do poľa treba uviesť typ a počet prvkov</li>
+<li>Vypisovanie hodnoty typu <code>\/</code> alebo <code>\\</code>:</li>
+<li><code>(47 + 24)&gt;&gt;; (47 + 24)&gt;&gt;&gt;;</code></li>
+<li>tri <code>&gt;</code> ukončia výstup novým riadkom</li>
+<li>dve <code>&gt;</code> iba výpišu hodnotu</li>
+<li>Vypisovanie polí:</li>
+<li><code>\/[n] x; x&gt;&gt;&gt;\/[5]; x&gt;&gt;\/[5];</code></li>
+<li>tri <code>&gt;</code> oddeľujú prvky poľa novým riadkom</li>
+<li>dve <code>&gt;</code> oddeľujú prvky poľa medzerou</li>
+<li>treba špecifikovať správny typ poľa a počet prvkov &lt;= veľkosti poľa</li>
+</ul>
+<h2>Komentáre</h2>
+<p>Jazyk podporuje riadkové komentáre začínajúce a končiace znakom <code>~</code> (tilde)</p>
+<h2>Sémantické pravidlá</h2>
+<ul>
+<li>Jazyk je typový a (mal by) kontrolovať typy všade kde je to možné</li>
+<li>Premenné sú function-scoped. Premenné definované vnútri blokov for, if, 
+   while sú použiteľné aj mimo nich. </li>
+<li>Premenné nemôžu byť predefinované (<code>\\x;\/x;~ani znovu~\\x;</code>)</li>
+<li>Whitespace sú ignorované kompilátorom </li>
+<li>Samostatné existujúci (bez if/for/while) blok príkazov nejde vytvoriť 
+   (nemá zmysel keďže jazyk má function-scoped premenné).</li>
+<li>Príkazy treba ukončovať bodkočiarkou pokiaľ nie je povedané ináč
+   ( napr. posledný príkaz vo for-e )</li>
+<li>Toto sa týka aj blokových príkazov (if, for, while) a definície a 
+     deklarácie funkcii</li>
+</ul>
+<h2>Kľúčové slova</h2>
+<p>Jazyk nemá žiadne alfanumerické kľúčové slova</p>
+</body>
+</html>

@@ -1,0 +1,4 @@
+primes prog/primes.fu
+graph prog/graph.fu
+sort prog/sort.fu
+
