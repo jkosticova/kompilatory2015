@@ -1,0 +1,62 @@
+int dfs(int v, int n, bool g[][], bool vis[]) {
+	if(vis[v] == 0) {
+		vis[v] = TRUE;
+		int i;
+		i = 0;
+		while(i < n) {
+			if(g[v][i]) {
+				dfs(i, n, g, vis);
+			}
+			i = i + 1;
+		}
+	}
+	return 0;
+}
+
+int main() {
+	int n;
+	int m;
+	n = scanInt();
+	m = scanInt();
+
+	bool g[n][n];
+	bool vis[n];
+	int i;
+	int j;
+	i = 0;
+	while(i < n) { /* Vynulovanie */
+		j = 0;
+		vis[i] = FALSE;
+		while(j < n) {
+			g[i][j] = FALSE;
+			j = j + 1;
+		}
+		i = i +1;
+	}
+
+	int a;
+	int b;
+	i = 0;
+	while(i < m) { /* Nacitanie */
+		a = scanInt(a);
+		b = scanInt(b);
+		g[a][b] = TRUE;
+		g[b][a] = TRUE;
+	}
+
+	dfs(0, n, g, vis); /* Prehladavanie */
+
+	bool ok;
+	ok = TRUE;
+	i = 0;
+	while(i < n) {
+		ok = ok && vis[i];
+		i = i + 1;
+	}
+	if(ok) {
+		printString("ANO"); printEndl();
+	} else {
+		printString("NIE"); printEndl();
+	}
+	return 0;
+}
